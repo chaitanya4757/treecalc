@@ -21,7 +21,7 @@ class EquationApiTest {
     mvc.perform(post("/api/equations/store").contentType(MediaType.APPLICATION_JSON)
         .content("{\"equation\":\"" + eq + "\"}"))
       .andExpect(status().isOk())
-      .andExpect(jsonPath("$.equationId").isNumber());
+      .andExpect(jsonPath("$.equationId").isString());
   }
 
   @Test void storeThenListShowsInfixAndPostfix() throws Exception {
@@ -37,7 +37,7 @@ class EquationApiTest {
       .andExpect(status().isOk());
     // id of the equation just stored is the highest id in the list
     String body = mvc.perform(get("/api/equations")).andReturn().getResponse().getContentAsString();
-    java.util.regex.Matcher m = java.util.regex.Pattern.compile("\"equationId\":(\\d+)").matcher(body);
+    java.util.regex.Matcher m = java.util.regex.Pattern.compile("\"equationId\":\"(\\d+)\"").matcher(body);
     long id = 0; while (m.find()) id = Math.max(id, Long.parseLong(m.group(1)));
     mvc.perform(post("/api/equations/" + id + "/evaluate").contentType(MediaType.APPLICATION_JSON)
         .content("{\"variables\":{\"x\":2,\"y\":3,\"z\":1}}"))
@@ -48,7 +48,7 @@ class EquationApiTest {
   @Test void complexEquationEvaluates() throws Exception {
     store("(a + 2b)^2 / 4 - -c");
     String body = mvc.perform(get("/api/equations")).andReturn().getResponse().getContentAsString();
-    java.util.regex.Matcher m = java.util.regex.Pattern.compile("\"equationId\":(\\d+)").matcher(body);
+    java.util.regex.Matcher m = java.util.regex.Pattern.compile("\"equationId\":\"(\\d+)\"").matcher(body);
     long id = 0; while (m.find()) id = Math.max(id, Long.parseLong(m.group(1)));
     // (2+2*3)^2/4 + 1 = 64/4 + 1 = 17
     mvc.perform(post("/api/equations/" + id + "/evaluate").contentType(MediaType.APPLICATION_JSON)
@@ -73,7 +73,7 @@ class EquationApiTest {
   @Test void missingVariableReturns400() throws Exception {
     store("p + q");
     String body = mvc.perform(get("/api/equations")).andReturn().getResponse().getContentAsString();
-    java.util.regex.Matcher m = java.util.regex.Pattern.compile("\"equationId\":(\\d+)").matcher(body);
+    java.util.regex.Matcher m = java.util.regex.Pattern.compile("\"equationId\":\"(\\d+)\"").matcher(body);
     long id = 0; while (m.find()) id = Math.max(id, Long.parseLong(m.group(1)));
     mvc.perform(post("/api/equations/" + id + "/evaluate").contentType(MediaType.APPLICATION_JSON)
         .content("{\"variables\":{\"p\":1}}"))

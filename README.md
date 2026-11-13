@@ -52,3 +52,19 @@ mvn test
 - Variables are letters, e.g. `x`, `rate`.
 - Storage is in memory, so data resets when the app restarts.
 - The sample output in the assignment PDF shows 10 for `3x + 2y - z` with x=2, y=3, z=1. The correct result is 11 (6 + 6 - 1), and that is what this app returns.
+
+## Test with Postman / curl
+Base URL: `https://treecalc.onrender.com` (or `http://localhost:8080`)
+
+1. **Store**: `POST /api/equations/store`
+   Body (raw JSON): `{"equation":"3x + 2y - z"}`
+2. **List**: `GET /api/equations`
+3. **Evaluate**: `POST /api/equations/1/evaluate`
+   Body (raw JSON): `{"variables":{"x":2,"y":3,"z":1}}`
+
+curl example:
+```
+curl -X POST https://treecalc.onrender.com/api/equations/store \
+  -H "Content-Type: application/json" \
+  -d '{"equation":"3x + 2y - z"}'
+```
